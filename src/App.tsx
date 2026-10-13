@@ -128,7 +128,7 @@ export default function App() {
           onIndexChange={(i) => setCurrentIndex(i)}
           onSelect={() => togglePlay()}
           loop={true}
-          spin={isPlaying ? 16 : 0}
+          spin={isPlaying ? 14 : 26}
           sheen={0.65}
           depth={0.44}
           yaw={24}

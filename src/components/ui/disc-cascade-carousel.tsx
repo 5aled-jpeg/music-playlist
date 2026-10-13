@@ -649,6 +649,7 @@ export default function DiscCascadeCarousel({
     raf: 0, last: 0, size: 300, reduced: false,
     drag: null as null | { id: number; x0: number; pos0: number; moved: boolean; samples: { t: number; x: number }[] },
     clickBlock: false, wheel: 0, wheelAt: 0, stepAt: 0,
+    stageRect: null as null | DOMRect,
   }).current
   const cfg = React.useRef({ n, loop, spacing, rise, depth, yaw, fan, tilt, roll, bounce, duration })
   cfg.current = { n, loop, spacing, rise, depth, yaw, fan, tilt, roll, bounce, duration }
@@ -761,6 +762,7 @@ export default function DiscCascadeCarousel({
     if (!el) return
     const measure = () => {
       E.size = el.offsetWidth || 300
+      E.stageRect = null
     }
     measure()
     const ro = new ResizeObserver(measure)
@@ -852,7 +854,8 @@ export default function DiscCascadeCarousel({
   const onPointerMove = (e: React.PointerEvent) => {
     // The glint and the chosen disc's lean follow a mouse, never a finger.
     if (e.pointerType === "mouse" && !E.drag?.moved) {
-      const st = stageRef.current?.getBoundingClientRect()
+      if (!E.stageRect) E.stageRect = stageRef.current?.getBoundingClientRect() ?? null
+      const st = E.stageRect
       const root = rootRef.current
       if (st && root) {
         const cx = Math.max(-1, Math.min(1, (e.clientX - (st.left + st.width / 2)) / st.width))
