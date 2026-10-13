@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import DiscCascadeCarousel, { type DiscCascadeItem } from '@/components/ui/disc-cascade-carousel'
 import { MinimalPlayer } from '@/components/ui/minimal-player'
-import { LuxuryCursor } from '@/components/ui/luxury-cursor'
 import { TRACKS } from '@/data/tracks'
 
 export default function App() {
@@ -105,9 +104,6 @@ export default function App() {
 
   return (
     <div className="relative w-full h-screen h-[100dvh] overflow-hidden bg-[#060608] text-[#ecebe7] select-none font-sans flex flex-col justify-between">
-      {/* Sleek luxury custom spring cursor */}
-      <LuxuryCursor />
-
       {/* Audio Engine */}
       <audio
         ref={audioRef}
