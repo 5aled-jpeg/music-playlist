@@ -7,6 +7,8 @@ interface MinimalPlayerProps {
   currentTime: number
   duration: number
   onSeek: (time: number) => void
+  currentIndex?: number
+  totalTracks?: number
 }
 
 export const MinimalPlayer: React.FC<MinimalPlayerProps> = ({
@@ -15,6 +17,8 @@ export const MinimalPlayer: React.FC<MinimalPlayerProps> = ({
   currentTime,
   duration,
   onSeek,
+  currentIndex,
+  totalTracks,
 }) => {
   const progressBarRef = useRef<HTMLDivElement>(null)
 
@@ -36,15 +40,15 @@ export const MinimalPlayer: React.FC<MinimalPlayerProps> = ({
   }
 
   return (
-    <div className="fixed bottom-6 left-0 right-0 z-40 flex items-center justify-center pointer-events-auto px-6">
-      {/* Ultra-minimal floating control: Play/Pause + Progress Line + Time */}
-      <div className="flex items-center gap-4 w-full max-w-sm md:max-w-md select-none">
+    <div className="fixed bottom-6 left-0 right-0 z-40 flex items-center justify-center pointer-events-auto px-5 sm:px-6">
+      {/* Ultra-minimal floating control: Play/Pause + Progress Line + Track Count + Time */}
+      <div className="flex items-center gap-3.5 w-full max-w-sm sm:max-w-md select-none">
         {/* Minimal Play/Pause toggle button */}
         <button
           type="button"
           onClick={onTogglePlay}
           aria-label={isPlaying ? 'Pause' : 'Play'}
-          className="text-white/60 hover:text-white transition-opacity active:scale-90 p-1 flex-shrink-0 cursor-pointer focus:outline-none"
+          className="text-white/70 hover:text-white transition-opacity active:scale-90 p-1 flex-shrink-0 cursor-pointer focus:outline-none"
         >
           {isPlaying ? (
             <Pause className="w-3.5 h-3.5 fill-current" />
@@ -69,10 +73,18 @@ export const MinimalPlayer: React.FC<MinimalPlayerProps> = ({
           </div>
         </div>
 
-        {/* Whisper-quiet time digits */}
-        <span className="text-[10px] font-mono tabular-nums text-white/35 tracking-wider flex-shrink-0">
-          {formatTime(currentTime)}
-        </span>
+        {/* Whisper-quiet track number & time digits */}
+        <div className="flex items-center gap-2 text-[10px] font-mono tabular-nums text-white/40 tracking-wider flex-shrink-0">
+          {totalTracks != null && currentIndex != null ? (
+            <>
+              <span className="text-white/60 font-medium">
+                {String(currentIndex + 1).padStart(2, '0')}/{String(totalTracks).padStart(2, '0')}
+              </span>
+              <span className="opacity-30">•</span>
+            </>
+          ) : null}
+          <span>{formatTime(currentTime)}</span>
+        </div>
       </div>
     </div>
   )

@@ -373,8 +373,8 @@ const CSS =
   "text-transform:uppercase;opacity:.45;pointer-events:none;line-height:34px}" +
   ".dcc-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}" +
   "@container (max-width:720px){.dcc-link{display:none}.dcc-rev+.dcc-rev{display:none}.dcc-hint{display:none}" +
-  ".dcc-head{width:clamp(150px,44cqw,230px);top:calc(var(--dcc-pad) * 3.2)}.dcc-row:nth-child(n+3){display:none}}" +
-  "@container (max-width:420px){.dcc-revs{bottom:calc(var(--dcc-pad) * 4.4)}}" +
+  ".dcc-head{width:clamp(220px,76cqw,340px);top:calc(var(--dcc-pad) * 2.4)}}" +
+  "@container (max-width:420px){.dcc-revs{bottom:60px}}" +
   "@media (prefers-reduced-motion:reduce){.dcc-root .dcc-idle{animation:none}.dcc-in,.dcc-list{animation:none}" +
   ".dcc-tilt,.dcc-btn,.dcc-link,.dcc-menubtn svg{transition:none}}"
 

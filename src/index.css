@@ -165,3 +165,53 @@
   color: #ffffff !important;
   opacity: 1 !important;
 }
+
+/* Note & Credits Row Styling - Explicitly Visible on Mobile */
+.dcc-dl .dcc-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 5px 0 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Ensure the 3rd row ("Note") is never hidden on mobile */
+.dcc-dl .dcc-row:nth-child(n+3) {
+  display: flex !important;
+}
+
+.dcc-dl .dcc-row dt {
+  font-size: 7.5px !important;
+  line-height: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  flex-shrink: 0 !important;
+}
+
+.dcc-dl .dcc-row dd {
+  margin: 0 !important;
+  font-size: 11px !important;
+  line-height: 14px !important;
+  text-align: right !important;
+  color: rgba(244, 244, 246, 0.9) !important;
+  max-width: 78% !important;
+  word-break: break-word !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 640px) {
+  .dcc-head {
+    width: clamp(220px, 82vw, 340px) !important;
+    top: calc(var(--dcc-pad) * 2.2) !important;
+    left: var(--dcc-pad) !important;
+  }
+
+  /* Keep quotes comfortably clear of the bottom minimal player */
+  .dcc-revs {
+    bottom: 58px !important;
+    max-width: 300px !important;
+    width: 90% !important;
+  }
+}

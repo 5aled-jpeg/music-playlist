@@ -136,6 +136,8 @@ export default function App() {
           background="radial-gradient(130% 95% at 50% 45%, #16161a, #060608 85%)"
           color="#ecebe7"
           fontHref="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;800&family=Oswald:wght@600;700&display=swap"
+          controls={false}
+          discSize="clamp(230px, min(65vmin, 62vw), 500px)"
           hint=""
           ariaLabel="Personal music playlist"
         />
@@ -148,6 +150,8 @@ export default function App() {
         currentTime={currentTime}
         duration={duration}
         onSeek={handleSeek}
+        currentIndex={currentIndex}
+        totalTracks={TRACKS.length}
       />
     </div>
   )
