@@ -20,12 +20,12 @@ export default function App() {
       src: t.coverSrc,
       credits: [
         { label: "Artist", value: t.artist },
-        { label: t.side || "Track", value: t.year || "Archive" },
-        { label: "Perspective", value: t.message },
+        { label: t.side || "Side", value: t.year || "Archive" },
+        { label: "Note", value: t.message },
       ],
       reviews: [
         {
-          source: "Our Memory",
+          source: "From Me",
           quote: t.quote,
           stars: 5,
         },
@@ -33,7 +33,7 @@ export default function App() {
     }))
   }, [])
 
-  // Update audio source when current track changes
+  // Audio source change
   useEffect(() => {
     if (!audioRef.current) return
     const wasPlaying = isPlaying
@@ -46,7 +46,7 @@ export default function App() {
         .play()
         .then(() => setIsPlaying(true))
         .catch((err) => {
-          console.warn("Autoplay prevented:", err)
+          console.warn("Playback error:", err)
           setIsPlaying(false)
         })
     }
@@ -66,10 +66,6 @@ export default function App() {
           console.warn("Playback error:", err)
         })
     }
-  }
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : TRACKS.length - 1))
   }
 
   const handleNext = () => {
@@ -94,28 +90,36 @@ export default function App() {
     }
   }
 
-  const handleTrackEnded = () => {
-    // Automatically play next track
-    handleNext()
-  }
+  // Keyboard shortcut: Spacebar to toggle Play/Pause
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      if (e.code === 'Space') {
+        e.preventDefault()
+        togglePlay()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isPlaying])
 
   return (
     <div className="relative w-full h-screen h-[100dvh] overflow-hidden bg-[#060608] text-[#ecebe7] select-none font-sans flex flex-col justify-between">
-      {/* Sleek luxury custom cursor */}
+      {/* Sleek luxury custom spring cursor */}
       <LuxuryCursor />
 
-      {/* Hidden HTML5 Audio Element */}
+      {/* Audio Engine */}
       <audio
         ref={audioRef}
         src={currentTrack.audioSrc}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
-        onEnded={handleTrackEnded}
+        onEnded={handleNext}
         onPause={() => setIsPlaying(false)}
         onPlay={() => setIsPlaying(true)}
       />
 
-      {/* Ambient background glow */}
+      {/* Subtle ambient lighting */}
       <div className="ambient-glow" />
 
       {/* 3D CD Disc Carousel */}
@@ -133,25 +137,21 @@ export default function App() {
           depth={0.44}
           yaw={24}
           roll={110}
-          background="radial-gradient(130% 95% at 50% 45%, #18181c, #060608 85%)"
+          background="radial-gradient(130% 95% at 50% 45%, #16161a, #060608 85%)"
           color="#ecebe7"
           fontHref="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;800&family=Oswald:wght@600;700&display=swap"
-          hint="Click disc to play · Drag to browse"
+          hint=""
           ariaLabel="Personal music playlist"
         />
       </div>
 
-      {/* Minimal Player with Progress Bar matching user design */}
+      {/* Minimal Player with Progress Bar matching user reference */}
       <MinimalPlayer
         isPlaying={isPlaying}
         onTogglePlay={togglePlay}
-        onPrev={handlePrev}
-        onNext={handleNext}
         currentTime={currentTime}
         duration={duration}
         onSeek={handleSeek}
-        trackTitle={currentTrack.title}
-        trackArtist={currentTrack.artist}
       />
     </div>
   )

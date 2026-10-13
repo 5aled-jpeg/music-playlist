@@ -308,7 +308,7 @@ const CSS =
   ".dcc-root[data-spin] .dcc-slide[data-active] .dcc-idle{animation-play-state:running}" +
   ".dcc-root[data-dragging] .dcc-slide .dcc-idle{animation-play-state:paused}" +
   "@keyframes dcc-spin{to{transform:rotate(1turn)}}" +
-  ".dcc-idle>img{position:absolute;inset:0;width:100%;height:100%;max-width:none;display:block;object-fit:cover}" +
+  ".dcc-idle>img{position:absolute;inset:0;width:100%;height:100%;max-width:none;display:block;object-fit:cover;filter:contrast(1.02) brightness(.98)}" +
   ".dcc-idle>svg,.dcc-hub{position:absolute;inset:0;width:100%;height:100%;max-width:none;display:block;overflow:visible}" +
   ".dcc-hub{pointer-events:none}" +
   ".dcc-sheen{position:absolute;inset:0;border-radius:50%;pointer-events:none;mix-blend-mode:screen;opacity:var(--dcc-sheen);" +
@@ -1107,6 +1107,7 @@ export default function DiscCascadeCarousel({
                           <Art pattern={item.pattern ?? PATTERNS[i % PATTERNS.length]} pal={pal} seed={i + 1} uid={id} />
                         </svg>
                       )}
+                      <span className="dcc-noise" />
                       <Print item={item} i={i} uid={id} mark={brand} ink={ink} halo={item.src ? "rgba(0,0,0,.45)" : pal[0]} />
                     </span>
                   </span>
