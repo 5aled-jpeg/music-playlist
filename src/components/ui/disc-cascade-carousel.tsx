@@ -331,15 +331,15 @@ const CSS =
   ".dcc-menubtn svg{transition:transform .25s}.dcc-menubtn[aria-expanded=true] svg{transform:rotate(180deg)}" +
   ".dcc-list{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);min-width:240px;margin:0;" +
   "padding:6px;list-style:none;border-radius:10px;" +
-  "background:color-mix(in oklab,var(--color-background,#fff) 86%,transparent);" +
+  "background:rgba(12,12,16,.95);max-height:min(68vh,460px);overflow-y:auto;border-radius:14px;box-shadow:0 24px 64px -12px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.08);scrollbar-width:thin;" +
   "border:1px solid color-mix(in oklab,currentColor 12%,transparent);" +
   "-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 12px 32px -12px rgba(0,0,0,.28);" +
   "animation:dcc-drop .22s cubic-bezier(.2,.7,.2,1) both}" +
   "@keyframes dcc-drop{from{opacity:0;transform:translate(-50%,-6px)}}" +
   ".dcc-opt{display:flex;align-items:baseline;gap:10px;width:100%;margin:0;padding:7px 10px;border:0;border-radius:6px;" +
   "background:none;color:inherit;font:inherit;font-size:12px;text-align:left;cursor:pointer}" +
-  ".dcc-opt:hover,.dcc-opt:focus-visible{outline:none;background:color-mix(in oklab,currentColor 8%,transparent)}" +
-  ".dcc-opt[aria-current] .dcc-optt{font-weight:600}" +
+  ".dcc-opt:hover,.dcc-opt:focus-visible{outline:none;background:rgba(255,255,255,.08);color:#fff}" +
+  ".dcc-opt[aria-current]{background:rgba(255,255,255,.12);color:#fff}.dcc-opt[aria-current] .dcc-optt{font-weight:600;color:#fff}" +
   ".dcc-optn{font-size:10px;opacity:.45;font-variant-numeric:tabular-nums}" +
   ".dcc-opty{margin-left:auto;font-size:10px;opacity:.45}" +
   ".dcc-head{position:absolute;top:var(--dcc-pad);left:var(--dcc-pad);z-index:4;width:clamp(170px,21cqw,290px);pointer-events:none}" +

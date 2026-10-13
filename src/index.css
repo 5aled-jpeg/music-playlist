@@ -77,3 +77,75 @@
   mix-blend-mode: multiply;
   z-index: 3;
 }
+
+/* Tracklist Dropdown Menu — Deep Dark Luxury & High-Contrast */
+.dcc-root .dcc-list {
+  background: rgba(10, 10, 14, 0.94) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  -webkit-backdrop-filter: blur(28px) !important;
+  backdrop-filter: blur(28px) !important;
+  box-shadow: 0 24px 64px -12px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.06) !important;
+  border-radius: 14px !important;
+  padding: 6px !important;
+  min-width: 260px !important;
+  max-height: min(65vh, 440px) !important;
+  overflow-y: auto !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.dcc-root .dcc-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.dcc-root .dcc-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+}
+
+.dcc-root .dcc-opt {
+  color: rgba(244, 244, 246, 0.72) !important;
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  transition: all 0.15s ease !important;
+  cursor: pointer !important;
+  font-size: 12px !important;
+}
+
+.dcc-root .dcc-opt:hover,
+.dcc-root .dcc-opt:focus-visible {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+.dcc-root .dcc-opt[aria-current] {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+.dcc-root .dcc-opt[aria-current] .dcc-optt {
+  font-weight: 600 !important;
+  color: #ffffff !important;
+}
+
+.dcc-root .dcc-optn {
+  color: rgba(255, 255, 255, 0.35) !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-size: 10px !important;
+}
+
+.dcc-root .dcc-opty {
+  color: rgba(255, 255, 255, 0.35) !important;
+  font-size: 10px !important;
+}
+
+.dcc-root .dcc-menubtn {
+  color: rgba(244, 244, 246, 0.7) !important;
+  transition: color 0.2s ease !important;
+}
+
+.dcc-root .dcc-menubtn:hover,
+.dcc-root .dcc-menubtn[aria-expanded="true"] {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
