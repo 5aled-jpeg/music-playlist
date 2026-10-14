@@ -352,7 +352,7 @@ const CSS =
   ".dcc-row dd{margin:0;font-size:10.5px;line-height:13px;text-align:right}" +
   ".dcc-row dd span{display:block}" +
   ".dcc-in{animation:dcc-in .8s cubic-bezier(.2,.7,.1,1) both;animation-delay:calc(var(--i,0) * 60ms)}" +
-  "@keyframes dcc-in{from{opacity:0;transform:translateY(12px);filter:blur(5px)}}" +
+  "@keyframes dcc-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}" +
   ".dcc-revs{position:absolute;bottom:calc(var(--dcc-pad) * 1.1);left:50%;transform:translateX(-50%);z-index:4;" +
   "display:flex;gap:clamp(24px,7cqw,96px);pointer-events:none}" +
   ".dcc-rev{width:clamp(130px,15cqw,200px);text-align:center}" +
@@ -589,7 +589,7 @@ function Hub({ uid }: { uid: string }) {
 }
 
 // ---- component ----------------------------------------------------------------------
-export default function DiscCascadeCarousel({
+function DiscCascadeCarouselComponent({
   items,
   height = "100svh",
   discSize = "clamp(170px, min(50vmin, 38vw), 420px)",
@@ -731,10 +731,17 @@ export default function DiscCascadeCarousel({
   const goTo = (i: number) => setTarget(targetFor(i, E.target, cfg.current.n, cfg.current.loop))
   const step = (by: number) => setTarget(Math.round(E.target) + by)
 
-  // controlled index
+  // controlled index (only responds when external `index` prop changes, never fights active drag or internal transition)
+  const prevIndexRef = React.useRef(index)
   React.useEffect(() => {
-    if (index == null || !n) return
-    if (wrapIndex(Math.round(E.target), n) !== wrapIndex(index, n)) goTo(wrapIndex(index, n))
+    if (index == null || !n || E.drag) return
+    if (prevIndexRef.current !== index) {
+      prevIndexRef.current = index
+      const targetIdx = wrapIndex(index, n)
+      if (wrapIndex(active, n) !== targetIdx) {
+        goTo(targetIdx)
+      }
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index, n])
 
@@ -1099,7 +1106,7 @@ export default function DiscCascadeCarousel({
                           src={item.src}
                           alt={item.alt ?? item.title}
                           draggable={false}
-                          loading={Math.abs(i - start) > 3 ? "lazy" : undefined}
+                          loading="eager"
                           decoding="async"
                           width={600}
                           height={600}
@@ -1164,3 +1171,7 @@ export default function DiscCascadeCarousel({
     </div>
   )
 }
+
+export const DiscCascadeCarousel = React.memo(DiscCascadeCarouselComponent)
+export default DiscCascadeCarousel
+

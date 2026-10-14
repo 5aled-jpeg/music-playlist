@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react'
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react'
 import DiscCascadeCarousel, { type DiscCascadeItem } from '@/components/ui/disc-cascade-carousel'
 import { MinimalPlayer } from '@/components/ui/minimal-player'
 import { TRACKS } from '@/data/tracks'
@@ -12,7 +12,7 @@ export default function App() {
 
   const currentTrack = TRACKS[currentIndex]
 
-  // Map tracks to DiscCascadeItems
+  // Map tracks to DiscCascadeItems (memoized once)
   const carouselItems: DiscCascadeItem[] = useMemo(() => {
     return TRACKS.map((t) => ({
       title: t.title,
@@ -32,50 +32,79 @@ export default function App() {
     }))
   }, [])
 
-  // Audio source change
+  // Preload initial track on mount
   useEffect(() => {
-    if (!audioRef.current) return
+    if (audioRef.current && TRACKS[0]) {
+      audioRef.current.src = TRACKS[0].audioSrc
+      audioRef.current.load()
+    }
+  }, [])
+
+  // Debounced audio loading & playback so transitions across tracks are buttery smooth
+  useEffect(() => {
+    const targetTrack = TRACKS[currentIndex]
+    if (!audioRef.current || !targetTrack) return
+
     const wasPlaying = isPlaying
 
-    audioRef.current.src = currentTrack.audioSrc
-    audioRef.current.load()
+    const timer = setTimeout(() => {
+      const audio = audioRef.current
+      if (!audio) return
 
-    if (wasPlaying) {
-      audioRef.current
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch((err) => {
-          console.warn("Playback error:", err)
-          setIsPlaying(false)
-        })
-    }
+      // Only switch src if it actually changed
+      if (!audio.src.endsWith(encodeURI(targetTrack.audioSrc)) && audio.src !== targetTrack.audioSrc) {
+        audio.src = targetTrack.audioSrc
+        audio.load()
+      }
+
+      if (wasPlaying) {
+        audio
+          .play()
+          .then(() => setIsPlaying(true))
+          .catch((err) => {
+            console.warn("Playback error:", err)
+            setIsPlaying(false)
+          })
+      }
+    }, 180)
+
+    return () => clearTimeout(timer)
   }, [currentIndex])
 
-  const togglePlay = () => {
+  const togglePlay = useCallback(() => {
     if (!audioRef.current) return
 
     if (isPlaying) {
       audioRef.current.pause()
       setIsPlaying(false)
     } else {
-      audioRef.current
+      const audio = audioRef.current
+      if (!audio.src) {
+        audio.src = TRACKS[currentIndex].audioSrc
+        audio.load()
+      }
+      audio
         .play()
         .then(() => setIsPlaying(true))
         .catch((err) => {
           console.warn("Playback error:", err)
         })
     }
-  }
+  }, [isPlaying, currentIndex])
 
-  const handleNext = () => {
+  const handleIndexChange = useCallback((i: number) => {
+    setCurrentIndex(i)
+  }, [])
+
+  const handleNext = useCallback(() => {
     setCurrentIndex((prev) => (prev + 1) % TRACKS.length)
-  }
+  }, [])
 
-  const handleSeek = (time: number) => {
+  const handleSeek = useCallback((time: number) => {
     if (!audioRef.current) return
     audioRef.current.currentTime = time
     setCurrentTime(time)
-  }
+  }, [])
 
   const handleTimeUpdate = () => {
     if (audioRef.current) {
@@ -100,14 +129,13 @@ export default function App() {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isPlaying])
+  }, [togglePlay])
 
   return (
     <div data-is-playing={isPlaying ? "true" : "false"} className="relative w-full h-screen h-[100dvh] overflow-hidden bg-[#060608] text-[#ecebe7] select-none font-sans flex flex-col justify-between">
-      {/* Audio Engine */}
+      {/* Audio Engine - src controlled programmatically to prevent synchronous render stalls */}
       <audio
         ref={audioRef}
-        src={currentTrack.audioSrc}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleNext}
@@ -125,8 +153,8 @@ export default function App() {
           brand="SIDE // B"
           indexLabel="TRACKLIST"
           index={currentIndex}
-          onIndexChange={(i) => setCurrentIndex(i)}
-          onSelect={() => togglePlay()}
+          onIndexChange={handleIndexChange}
+          onSelect={togglePlay}
           loop={true}
           spin={18}
           sheen={0.65}
