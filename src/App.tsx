@@ -51,22 +51,25 @@ export default function App() {
       const audio = audioRef.current
       if (!audio) return
 
-      // Only switch src if it actually changed
-      if (!audio.src.endsWith(encodeURI(targetTrack.audioSrc)) && audio.src !== targetTrack.audioSrc) {
-        audio.src = targetTrack.audioSrc
-        audio.load()
+      const cleanSrc = targetTrack.audioSrc
+      if (!audio.src.endsWith(encodeURI(cleanSrc)) && audio.src !== cleanSrc) {
+        audio.src = cleanSrc
       }
 
       if (wasPlaying) {
-        audio
-          .play()
-          .then(() => setIsPlaying(true))
-          .catch((err) => {
-            console.warn("Playback error:", err)
-            setIsPlaying(false)
-          })
+        const playPromise = audio.play()
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => setIsPlaying(true))
+            .catch((err) => {
+              if (err.name !== 'AbortError') {
+                console.warn('Playback error:', err)
+                setIsPlaying(false)
+              }
+            })
+        }
       }
-    }, 180)
+    }, 380)
 
     return () => clearTimeout(timer)
   }, [currentIndex])
@@ -81,14 +84,15 @@ export default function App() {
       const audio = audioRef.current
       if (!audio.src) {
         audio.src = TRACKS[currentIndex].audioSrc
-        audio.load()
       }
-      audio
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch((err) => {
-          console.warn("Playback error:", err)
-        })
+      const playPromise = audio.play()
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => setIsPlaying(true))
+          .catch((err) => {
+            console.warn('Playback error:', err)
+          })
+      }
     }
   }, [isPlaying, currentIndex])
 
@@ -156,6 +160,8 @@ export default function App() {
           onIndexChange={handleIndexChange}
           onSelect={togglePlay}
           loop={true}
+          duration={0.52}
+          bounce={0.12}
           spin={18}
           sheen={0.65}
           depth={0.44}

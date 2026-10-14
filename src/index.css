@@ -46,16 +46,21 @@
   z-index: 0;
 }
 
-/* Tactile film grain and noise effect for CD album covers (hardware accelerated, 0 blend overhead) */
+/* Tactile film grain and noise effect for active CD album cover (zero blend overhead) */
 .dcc-noise {
   position: absolute;
   inset: 0;
   border-radius: 50%;
   pointer-events: none;
+  opacity: 0;
+  z-index: 2;
+  transition: opacity 0.25s ease;
+}
+
+.dcc-slide[data-active] .dcc-noise {
   opacity: 0.16;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/%3E%3C/svg%3E");
   background-size: 110px 110px;
-  z-index: 2;
 }
 
 /* Lightweight performant vinyl micro-groove texture */
@@ -79,7 +84,7 @@
   z-index: 3;
 }
 
-/* CD Spinning Animation: Spins smoothly when song plays, stops when paused or dragging */
+/* CD Spinning Animation: Spins smoothly when song plays, stops when paused, dragging, or transitioning */
 .dcc-root .dcc-slide[data-active] .dcc-idle {
   animation: dcc-spin 16s linear infinite !important;
   animation-play-state: paused !important;
@@ -89,7 +94,8 @@
   animation-play-state: running !important;
 }
 
-.dcc-root[data-dragging] .dcc-slide .dcc-idle {
+.dcc-root[data-dragging] .dcc-slide .dcc-idle,
+.dcc-root[data-animating] .dcc-slide .dcc-idle {
   animation-play-state: paused !important;
 }
 

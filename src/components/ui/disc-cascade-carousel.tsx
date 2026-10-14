@@ -311,11 +311,12 @@ const CSS =
   ".dcc-idle>img{position:absolute;inset:0;width:100%;height:100%;max-width:none;display:block;object-fit:cover;filter:contrast(1.02) brightness(.98)}" +
   ".dcc-idle>svg,.dcc-hub{position:absolute;inset:0;width:100%;height:100%;max-width:none;display:block;overflow:visible}" +
   ".dcc-hub{pointer-events:none}" +
-  ".dcc-sheen{position:absolute;inset:0;border-radius:50%;pointer-events:none;mix-blend-mode:screen;opacity:var(--dcc-sheen);" +
-  "background:conic-gradient(from calc(var(--dcc-glint,0deg) + var(--dcc-px,0) * 70deg)," +
-  "transparent 0deg,rgba(255,255,255,.5) 16deg,transparent 38deg,transparent 140deg," +
-  "rgba(150,215,255,.32) 168deg,rgba(255,170,225,.32) 186deg,rgba(255,236,170,.26) 200deg,transparent 224deg,transparent 360deg)," +
-  "radial-gradient(circle at 32% 24%,rgba(255,255,255,.3),transparent 46%)}" +
+  ".dcc-sheen{position:absolute;inset:0;border-radius:50%;pointer-events:none;opacity:var(--dcc-sheen);" +
+  "transform:rotate(calc(var(--dcc-glint,0deg) + var(--dcc-px,0) * 70deg));will-change:transform;" +
+  "background:conic-gradient(from 0deg," +
+  "transparent 0deg,rgba(255,255,255,.45) 16deg,transparent 38deg,transparent 140deg," +
+  "rgba(150,215,255,.28) 168deg,rgba(255,170,225,.28) 186deg,rgba(255,236,170,.22) 200deg,transparent 224deg,transparent 360deg)," +
+  "radial-gradient(circle at 32% 24%,rgba(255,255,255,.25),transparent 46%)}" +
   ".dcc-slide:focus-visible .dcc-disc{box-shadow:inset 0 0 0 3px var(--color-background,#fff),inset 0 0 0 6px var(--color-primary,#171717)}" +
   ".dcc-nav{position:absolute;top:calc(var(--dcc-pad) * .9);left:50%;transform:translateX(-50%);z-index:5;" +
   "display:flex;align-items:center;gap:clamp(12px,1.8cqw,22px);font-size:12px;white-space:nowrap}" +
@@ -676,10 +677,27 @@ function DiscCascadeCarouselComponent({
       const el = slideRefs.current[i]
       if (!el) continue
       const t = styleFor(i, E.a, E.b)
+      if (t.hidden) {
+        if (!el.dataset.h) {
+          el.dataset.h = "1"
+          el.style.visibility = "hidden"
+        }
+        continue
+      }
+      if (el.dataset.h) {
+        delete el.dataset.h
+        el.style.visibility = ""
+      }
       el.style.transform = t.transform
-      el.style.zIndex = "" + t.zIndex
-      el.style.opacity = t.opacity < 1 ? t.opacity.toFixed(3) : ""
-      el.style.visibility = t.hidden ? "hidden" : ""
+      if (el.dataset.z !== "" + t.zIndex) {
+        el.dataset.z = "" + t.zIndex
+        el.style.zIndex = "" + t.zIndex
+      }
+      const op = t.opacity < 1 ? t.opacity.toFixed(3) : ""
+      if (el.dataset.op !== op) {
+        el.dataset.op = op
+        el.style.opacity = op
+      }
       el.style.setProperty("--dcc-roll", t.roll)
       el.style.setProperty("--dcc-glint", t.glint)
     }
@@ -698,6 +716,9 @@ function DiscCascadeCarouselComponent({
       if (!E.drag) [E.a, E.va] = springStep(E.a, E.va, E.target, s.omega, s.slide, dt)
       ;[E.b, E.vb] = springStep(E.b, E.vb, E.a, s.omega * 1.05, s.tilt, dt)
     }
+    if (rootRef.current && !rootRef.current.hasAttribute("data-animating")) {
+      rootRef.current.setAttribute("data-animating", "")
+    }
     paint()
     const settled =
       !E.drag && Math.abs(E.a - E.target) < 1e-3 && Math.abs(E.va) < 1e-2 && Math.abs(E.b - E.a) < 1e-3 && Math.abs(E.vb) < 1e-2
@@ -707,6 +728,7 @@ function DiscCascadeCarouselComponent({
       paint()
       E.raf = 0
       E.last = 0
+      rootRef.current?.removeAttribute("data-animating")
       return
     }
     E.raf = requestAnimationFrame(frame_)
