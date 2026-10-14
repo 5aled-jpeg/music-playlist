@@ -1,32 +1,71 @@
-# React + TypeScript + Vite
+# SIDE // B — Interactive 3D Audio Experience
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A high-prestige, atmospheric 3D disc carousel and audio player engineered with sub-pixel spring physics, real-time vinyl shaders, and minimalist audio controls.
 
-Currently, two official plugins are available:
+![SIDE // B Preview](./public/preview.jpg)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## ⚡ Highlights & Cool Stuff
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Sub-Pixel 3D Spring Physics**: Custom semi-implicit Euler integration engine running at a rock-solid 60 FPS, calculating depth, yaw, tilt, and angular roll in real time.
+- **Dynamic 3D Disc Shading**: Conic glint reflections, specular highlights, radial vinyl micro-grooves, and analog film grain textures mapped directly onto circular geometries.
+- **Synchronized Playback Spin**: Active vinyl disc smoothly rotates with continuous angular velocity while music plays, immediately pausing on drag or pause states.
+- **Debounced Audio Pipeline**: Zero-stutter track transitions decoupling heavy MP3 metadata decoding from the 60 FPS rendering thread.
+- **Deep Dark Luxury UI**: Dark mode palette (`#060608`), hairline borders (`rgba(255,255,255,0.08)`), and deep glassmorphic dropdowns (`backdrop-filter: blur(28px)`).
+- **Whisper-Quiet Progress Rail**: Ultra-minimal progress bar with instantaneous click-to-seek, track counters, and micro-typography.
+- **Fluid Gesture & Touch Support**: Inertia-based momentum flicking, pointer capture, mouse hover tilt tracking, and touch swipe gestures.
 
-## Expanding the Oxlint configuration
+---
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## 🛠️ Technology Stack
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+| Layer | Technology |
+| :--- | :--- |
+| **Framework** | [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) |
+| **Build Tooling** | [Vite 8](https://vite.dev/) (Oxidation / Rolldown fast path) |
+| **Styling & Shaders** | [Tailwind CSS v4](https://tailwindcss.com/) + Pure CSS 3D Matrix Transforms |
+| **Audio Engine** | Native HTML5 Audio API with debounced pipeline management |
+| **Typography** | *Instrument Serif*, *Oswald*, *Inter*, and JetBrains Mono |
+| **Icons** | [Lucide React](https://lucide.dev/) |
+
+---
+
+## 🏎️ Engineering & Performance Architecture
+
+1. **Direct DOM Mutation in RAF**: Animation loops bypass React's virtual DOM reconciliation during motion, writing transforms and CSS variables directly to slide elements via `requestAnimationFrame`.
+2. **Hardware Layer Optimization**: Avoided composite layer explosion and off-screen blend mode readbacks by utilizing GPU-instanced 3D transforms (`translate3d`, `rotateY`, `rotateX`) with standard alpha compositing.
+3. **Decoupled Spring State**: External React state changes and internal pointer drag springs are coordinated via ref-based locks (`prevIndexRef`) so the carousel never fights user input.
+4. **Pre-Decoded Texture Pipeline**: All vinyl cover assets utilize eager image decoding into VRAM to ensure zero hitching when entering viewport depth.
+
+---
+
+## 🎮 Controls & Interaction
+
+- **Click Active Disc**: Play / Pause audio
+- **Click Adjacent Disc**: Smooth spring slide to focus
+- **Drag / Swipe**: Natural physics flick with release inertia
+- **Spacebar**: Global Play / Pause toggle
+- **Arrow Keys**: Step previous (`←` / `↑`) or next (`→` / `↓`)
+- **Tracklist Menu**: Instant jump to any record in the catalog
+
+---
+
+## 🚀 Getting Started
+
+```bash
+# Clone the repository
+git clone https://github.com/5aled-jpeg/music-playlist.git
+
+# Navigate into project directory
+cd music-playlist
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
 ```
-
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
