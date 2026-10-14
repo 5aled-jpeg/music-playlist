@@ -80,18 +80,37 @@
   z-index: 3;
 }
 
-/* Permanent GPU layer promotion to maintain constant 60 FPS */
+/* Permanent GPU layer promotion to maintain constant 60 FPS (without stomping rotation) */
 .dcc-stage,
 .dcc-slide,
 .dcc-disc,
 .dcc-tilt,
 .dcc-roll,
-.dcc-idle,
 .dcc-noise {
   will-change: transform;
   transform: translateZ(0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+}
+
+/* CD Spinning Animation: Spins smoothly when song plays, stops when paused */
+.dcc-root .dcc-slide[data-active] .dcc-idle {
+  animation: dcc-spin 16s linear infinite !important;
+  animation-play-state: paused !important;
+  will-change: transform;
+}
+
+[data-is-playing="true"] .dcc-root .dcc-slide[data-active] .dcc-idle {
+  animation-play-state: running !important;
+}
+
+@keyframes dcc-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Tracklist Dropdown Menu — Deep Dark Luxury & High-Contrast */
@@ -202,16 +221,39 @@
 
 /* Mobile responsive adjustments */
 @media (max-width: 640px) {
+  /* Center song title and header block horizontally */
   .dcc-head {
-    width: clamp(220px, 82vw, 340px) !important;
-    top: calc(var(--dcc-pad) * 2.2) !important;
-    left: var(--dcc-pad) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: calc(100% - 40px) !important;
+    max-width: 360px !important;
+    top: 56px !important;
+    text-align: center !important;
   }
 
-  /* Keep quotes comfortably clear of the bottom minimal player */
+  .dcc-head .dcc-title {
+    text-align: center !important;
+    margin: 0 auto 10px auto !important;
+  }
+
+  /* Center the bottom quote section cleanly */
   .dcc-revs {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
     bottom: 58px !important;
-    max-width: 300px !important;
-    width: 90% !important;
+    width: calc(100% - 40px) !important;
+    max-width: 340px !important;
+    text-align: center !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto !important;
+  }
+
+  .dcc-rev {
+    width: 100% !important;
+    max-width: 340px !important;
+    margin: 0 auto !important;
+    text-align: center !important;
   }
 }

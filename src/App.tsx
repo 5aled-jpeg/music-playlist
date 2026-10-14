@@ -103,7 +103,7 @@ export default function App() {
   }, [isPlaying])
 
   return (
-    <div className="relative w-full h-screen h-[100dvh] overflow-hidden bg-[#060608] text-[#ecebe7] select-none font-sans flex flex-col justify-between">
+    <div data-is-playing={isPlaying ? "true" : "false"} className="relative w-full h-screen h-[100dvh] overflow-hidden bg-[#060608] text-[#ecebe7] select-none font-sans flex flex-col justify-between">
       {/* Audio Engine */}
       <audio
         ref={audioRef}
@@ -128,7 +128,7 @@ export default function App() {
           onIndexChange={(i) => setCurrentIndex(i)}
           onSelect={() => togglePlay()}
           loop={true}
-          spin={isPlaying ? 14 : 26}
+          spin={18}
           sheen={0.65}
           depth={0.44}
           yaw={24}
