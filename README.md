@@ -2,6 +2,8 @@
 
 A high-prestige, atmospheric 3D disc carousel and audio player engineered with sub-pixel spring physics, real-time vinyl shaders, and minimalist audio controls.
 
+![SIDE // B Preview](./public/preview.jpg)
+
 ---
 
 ## ⚡ Highlights & Cool Stuff
