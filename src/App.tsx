@@ -8,6 +8,15 @@ export default function App() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
+  const [volume, setVolume] = useState(() => {
+    try {
+      const saved = localStorage.getItem('side_b_volume')
+      return saved !== null ? Math.max(0, Math.min(1, parseFloat(saved))) : 0.8
+    } catch {
+      return 0.8
+    }
+  })
+  const [isMuted, setIsMuted] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
   const currentTrack = TRACKS[currentIndex]
@@ -32,10 +41,23 @@ export default function App() {
     }))
   }, [])
 
+  // Sync volume & mute state to audio element
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = isMuted ? 0 : volume
+    }
+    try {
+      localStorage.setItem('side_b_volume', volume.toString())
+    } catch {
+      // ignore
+    }
+  }, [volume, isMuted])
+
   // Preload initial track on mount
   useEffect(() => {
     if (audioRef.current && TRACKS[0]) {
       audioRef.current.src = TRACKS[0].audioSrc
+      audioRef.current.volume = isMuted ? 0 : volume
       audioRef.current.load()
     }
   }, [])
@@ -54,6 +76,7 @@ export default function App() {
       const cleanSrc = targetTrack.audioSrc
       if (!audio.src.endsWith(encodeURI(cleanSrc)) && audio.src !== cleanSrc) {
         audio.src = cleanSrc
+        audio.volume = isMuted ? 0 : volume
       }
 
       if (wasPlaying) {
@@ -72,7 +95,7 @@ export default function App() {
     }, 380)
 
     return () => clearTimeout(timer)
-  }, [currentIndex])
+  }, [currentIndex, isMuted, volume])
 
   const togglePlay = useCallback(() => {
     if (!audioRef.current) return
@@ -85,6 +108,7 @@ export default function App() {
       if (!audio.src) {
         audio.src = TRACKS[currentIndex].audioSrc
       }
+      audio.volume = isMuted ? 0 : volume
       const playPromise = audio.play()
       if (playPromise !== undefined) {
         playPromise
@@ -94,7 +118,7 @@ export default function App() {
           })
       }
     }
-  }, [isPlaying, currentIndex])
+  }, [isPlaying, currentIndex, isMuted, volume])
 
   const handleIndexChange = useCallback((i: number) => {
     setCurrentIndex(i)
@@ -110,6 +134,24 @@ export default function App() {
     setCurrentTime(time)
   }, [])
 
+  const handleVolumeChange = useCallback((newVol: number) => {
+    const clamped = Math.max(0, Math.min(1, newVol))
+    setVolume(clamped)
+    if (clamped > 0 && isMuted) {
+      setIsMuted(false)
+    }
+  }, [isMuted])
+
+  const toggleMute = useCallback(() => {
+    setIsMuted((prev) => {
+      const next = !prev
+      if (!next && volume === 0) {
+        setVolume(0.5)
+      }
+      return next
+    })
+  }, [volume])
+
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       setCurrentTime(audioRef.current.currentTime)
@@ -122,18 +164,27 @@ export default function App() {
     }
   }
 
-  // Keyboard shortcut: Spacebar to toggle Play/Pause
+  // Keyboard shortcuts: Spacebar to toggle Play/Pause, M to mute/unmute, Up/Down for volume
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
       if (e.code === 'Space') {
         e.preventDefault()
         togglePlay()
+      } else if (e.code === 'KeyM') {
+        e.preventDefault()
+        toggleMute()
+      } else if (e.code === 'ArrowUp') {
+        e.preventDefault()
+        handleVolumeChange(volume + 0.05)
+      } else if (e.code === 'ArrowDown') {
+        e.preventDefault()
+        handleVolumeChange(volume - 0.05)
       }
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [togglePlay])
+  }, [togglePlay, toggleMute, handleVolumeChange, volume])
 
   return (
     <div data-is-playing={isPlaying ? "true" : "false"} className="relative w-full h-screen h-[100dvh] overflow-hidden bg-[#060608] text-[#ecebe7] select-none font-sans flex flex-col justify-between">
@@ -177,7 +228,7 @@ export default function App() {
         />
       </div>
 
-      {/* Minimal Player with Progress Bar matching user reference */}
+      {/* Minimal Player with Progress Bar and Audio Modifier */}
       <MinimalPlayer
         isPlaying={isPlaying}
         onTogglePlay={togglePlay}
@@ -186,6 +237,10 @@ export default function App() {
         onSeek={handleSeek}
         currentIndex={currentIndex}
         totalTracks={TRACKS.length}
+        volume={volume}
+        onVolumeChange={handleVolumeChange}
+        isMuted={isMuted}
+        onToggleMute={toggleMute}
       />
     </div>
   )
