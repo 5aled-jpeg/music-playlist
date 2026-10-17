@@ -56,17 +56,6 @@ export const TRACKS: Track[] = [
     year: "2019",
   },
   {
-    id: "f-song",
-    title: "F Song",
-    artist: "Strawberry Guy",
-    audioSrc: "/songs/Strawberry Guy - F Song.mp3",
-    coverSrc: "/songs/photo_5_2026-10-13_22-57-38.jpg",
-    message: "Gentle chords for the moments that slipped away quietly.",
-    quote: "A quiet room, the sound of rain, and memories that linger.",
-    side: "Side A",
-    year: "2019",
-  },
-  {
     id: "moonlight-on-the-river",
     title: "Moonlight on the River",
     artist: "Mac DeMarco",
