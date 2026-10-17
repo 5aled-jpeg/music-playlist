@@ -208,7 +208,7 @@ export function poseOf(dx: number, d: number, c: PoseConfig) {
     roll: d * c.roll,
     zIndex: 100 + Math.round(d * 10),
     opacity: d < -2.5 ? Math.max(0, 1 - (-d - 2.5) / 1.2) : 1,
-    hidden: dx < -4 || dx > 2.8,
+    hidden: dx < -3.2 || dx > 2.2,
   }
 }
 // #endregion
@@ -289,7 +289,7 @@ const CSS =
   ".dcc-slide{position:absolute;inset:0;margin:0;padding:0;border:0;background:none;color:inherit;font:inherit;" +
   "border-radius:50%;cursor:pointer;will-change:transform;transform-style:preserve-3d;" +
   "-webkit-tap-highlight-color:transparent;outline:none}" +
-  ".dcc-tilt{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.2,.7,.2,1)}" +
+  ".dcc-tilt{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .2s ease-out}" +
   ".dcc-slide[data-active] .dcc-tilt{transform:translateZ(var(--dcc-lift,0px)) " +
   "rotateX(calc(var(--dcc-py,0) * -12deg)) rotateY(calc(var(--dcc-px,0) * 12deg))}" +
   ".dcc-slide[data-active]:hover{--dcc-lift:calc(var(--dcc-s) * .05)}" +
@@ -308,7 +308,7 @@ const CSS =
   ".dcc-root[data-spin] .dcc-slide[data-active] .dcc-idle{animation-play-state:running}" +
   ".dcc-root[data-dragging] .dcc-slide .dcc-idle{animation-play-state:paused}" +
   "@keyframes dcc-spin{to{transform:rotate(1turn)}}" +
-  ".dcc-idle>img{position:absolute;inset:0;width:100%;height:100%;max-width:none;display:block;object-fit:cover;filter:contrast(1.02) brightness(.98)}" +
+  ".dcc-idle>img{position:absolute;inset:0;width:100%;height:100%;max-width:none;display:block;object-fit:cover;backface-visibility:hidden;-webkit-backface-visibility:hidden}" +
   ".dcc-idle>svg,.dcc-hub{position:absolute;inset:0;width:100%;height:100%;max-width:none;display:block;overflow:visible}" +
   ".dcc-hub{pointer-events:none}" +
   ".dcc-sheen{position:absolute;inset:0;border-radius:50%;pointer-events:none;opacity:var(--dcc-sheen);" +
@@ -790,13 +790,22 @@ function DiscCascadeCarouselComponent({
     const el = stageRef.current
     if (!el) return
     const measure = () => {
-      E.size = el.offsetWidth || 300
-      E.stageRect = null
+      if (el) {
+        const rect = el.getBoundingClientRect()
+        E.size = rect.width || el.offsetWidth || 300
+        E.stageRect = rect
+      }
     }
     measure()
+    const rafId = requestAnimationFrame(measure)
     const ro = new ResizeObserver(measure)
     ro.observe(el)
-    return () => ro.disconnect()
+    window.addEventListener("resize", measure, { passive: true })
+    return () => {
+      cancelAnimationFrame(rafId)
+      ro.disconnect()
+      window.removeEventListener("resize", measure)
+    }
   }, [E])
 
   React.useEffect(() => () => cancelAnimationFrame(E.raf), [E])
@@ -878,6 +887,11 @@ function DiscCascadeCarouselComponent({
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.button !== 0 || !n) return
     if ((e.target as Element).closest("[data-dcc-ui]")) return
+    if (stageRef.current) {
+      const rect = stageRef.current.getBoundingClientRect()
+      E.size = rect.width || stageRef.current.offsetWidth || E.size
+      E.stageRect = rect
+    }
     E.drag = { id: e.pointerId, x0: e.clientX, pos0: E.a, moved: false, samples: [{ t: e.timeStamp, x: e.clientX }] }
   }
   const onPointerMove = (e: React.PointerEvent) => {
@@ -1064,14 +1078,14 @@ function DiscCascadeCarouselComponent({
       ) : null}
 
       {details && current ? (
-        <div className="dcc-head" key={"h" + active} aria-hidden="true">
-          <h2 className="dcc-title dcc-in" style={{ fontFamily: serif }}>
+        <div className="dcc-head" aria-hidden="true">
+          <h2 className="dcc-title" style={{ fontFamily: serif }}>
             {current.title}
           </h2>
           {current.credits?.length ? (
             <dl className="dcc-dl">
               {current.credits.map((c, k) => (
-                <div className="dcc-row dcc-in" key={k} style={{ ["--i" as string]: k + 1 } as React.CSSProperties}>
+                <div className="dcc-row" key={k}>
                   <dt>{c.label}</dt>
                   <dd>
                     {lines(c.value).map((v, j) => (
@@ -1153,11 +1167,11 @@ function DiscCascadeCarouselComponent({
       </div>
 
       {reviews && quotes.length ? (
-        <div className="dcc-revs" key={"r" + active} aria-hidden="true">
+        <div className="dcc-revs" aria-hidden="true">
           {quotes.map((q, k) => {
             const stars = Math.max(0, Math.min(5, Math.round(q.stars ?? 5)))
             return (
-              <figure className="dcc-rev dcc-in" key={k} style={{ margin: 0, ["--i" as string]: k + 3 } as React.CSSProperties}>
+              <figure className="dcc-rev" key={k} style={{ margin: 0 }}>
                 <div className="dcc-stars">{"★".repeat(stars) + "☆".repeat(5 - stars)}</div>
                 <figcaption className="dcc-src">{q.source}</figcaption>
                 <blockquote className="dcc-quote" style={{ fontFamily: serif }}>

@@ -99,6 +99,21 @@
   animation-play-state: paused !important;
 }
 
+/* Disable tilt transition while carousel is in active spring animation to avoid pipeline conflicts */
+.dcc-root[data-animating] .dcc-tilt,
+.dcc-root[data-dragging] .dcc-tilt {
+  transition: none !important;
+}
+
+/* GPU backface culling for all 3D disc elements */
+.dcc-slide,
+.dcc-tilt,
+.dcc-disc,
+.dcc-edge {
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
 @keyframes dcc-spin {
   from {
     transform: rotate(0deg);
