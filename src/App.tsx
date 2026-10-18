@@ -222,7 +222,7 @@ export default function App() {
           color="#ecebe7"
           fontHref="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;800&family=Oswald:wght@600;700&display=swap"
           controls={false}
-          discSize="clamp(220px, min(54vmin, 50vw), 430px)"
+          discSize="clamp(230px, min(65vmin, 62vw), 500px)"
           hint=""
           ariaLabel="Personal music playlist"
         />
